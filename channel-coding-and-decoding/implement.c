@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 #ifndef _DEBUG_COLOR_
 #define _DEBUG_COLOR_
@@ -30,27 +31,6 @@
 _Bool isPowerBy2(int n) {
     return n > 0 && (n & n - 1) == 0;
 }
-
-// function to convert decimal to binary 
-void decToBinary(int n) 
-{ 
-    // array to store binary number 
-    int binaryNum[32]; 
-  
-    // counter for binary array 
-    int i = 0; 
-    while (n > 0) { 
-  
-        // storing remainder in binary array 
-        binaryNum[i] = n % 2; 
-        n = n / 2; 
-        i++; 
-    } 
-  
-    // printing binary array in reverse order 
-    for (int j = i - 1; j >= 0; j--) 
-        printf("%d", binaryNum[j]);
-} 
 
 void generateRandomData(char *originalBin) {
     srand(time(NULL));
@@ -92,18 +72,13 @@ char * hammingEncoding(char *originalBin) {
                 int k = (i+1) >> c;
                 
                 if (k & 1) {
-                    if(checkbits[count] == '1')
-                        checkbits[count] = '0';
-                    else
-                        checkbits[count] = '1';
+                    if(checkbits[count] == '1') checkbits[count] = '0';
+                    else checkbits[count] = '1';
                 }
                 else {
-                    if(checkbits[count] == '1')
-                        checkbits[count] = '1';
-                    else
-                        checkbits[count] = '0';
+                    if(checkbits[count] == '1') checkbits[count] = '1';
+                    else checkbits[count] = '0';
                 }
-                
                 count++;
             }
         }
@@ -121,17 +96,70 @@ char * hammingEncoding(char *originalBin) {
     return hammingEncodedData;
 }
 
-void ruinData() {
+char * ruinData(int amount, char hammingEncodedData[]) {
+    static char ruinEncodedData[DATASIZE+HAMMING_CHECKBITS];
 
+    for(size_t i=0; i<DATASIZE+HAMMING_CHECKBITS; i++) {
+        ruinEncodedData[i] = *(hammingEncodedData + i);
+    }
+
+    srand(time(NULL));
+    //int randIndex = rand()%(DATASIZE+HAMMING_CHECKBITS);
+    int randIndex = 20;
+    //printf("%d\n", randIndex);  
+    if(ruinEncodedData[randIndex] == '1')
+        ruinEncodedData[randIndex] = '0';
+    else ruinEncodedData[randIndex] = '1'; 
+    //printf("%d\n", randIndex); 
+    
+    return ruinEncodedData;
 }
 
-void hammingDecoding() {
+char * hammingDecoding(char ruinEncodedData[]) {
+    char checkbits[HAMMING_CHECKBITS];
 
+    for(size_t i=0; i<DATASIZE+HAMMING_CHECKBITS; i++) {
+        int count = 0;
+        if(ruinEncodedData[i] == '1') {
+            for (int c = HAMMING_CHECKBITS-1; c >= 0; c--) {
+                int k = (i+1) >> c;
+                
+                if (k & 1) {
+                    if(checkbits[count] == '1') checkbits[count] = '0';
+                    else checkbits[count] = '1';
+                }
+                else {
+                    if(checkbits[count] == '1') checkbits[count] = '1';
+                    else checkbits[count] = '0';
+                }
+                count++;
+            }
+        }
+    }
+    
+    //printf("%s\n", checkbits);
+    int flag = 0;
+    int num = 0;
+    for(size_t i=HAMMING_CHECKBITS-1; i>=1; i--) {
+        if(checkbits[i] == '1') {
+            flag = 1;
+            num = num + pow(2, HAMMING_CHECKBITS-1-i);
+        }
+    }
+
+    if(flag = 1) printf(KGRN_L"(1-bit error detected and corrected.) ");
+    
+    if(ruinEncodedData[num-1]='1') ruinEncodedData[num-1] = '0';
+    else ruinEncodedData[num-1] = '1';
+
+    return ruinEncodedData;
 }
 
 int main(int argc, char *argv[]) {
     char originalBin[DATASIZE];
     char *hammingEncodedData;
+    char *ruinEncodedData;
+    char *hammingDecodedData;
 
     /* Used to randomly generate 1Kbits data */
     generateRandomData(originalBin);
@@ -143,15 +171,29 @@ int main(int argc, char *argv[]) {
     }
     printf("\n\n");
 
-    /* Hamming code */
+    /*---- Hamming code ----*/
     hammingEncodedData = hammingEncoding(originalBin);
-    printf(KGRN_L"Result of hamming encode: \n");
+    printf(KGRN_L"Result of hamming encoded data: \n");
     for(size_t i=0; i<DATASIZE+HAMMING_CHECKBITS; i++)
         printf(RESET"%c", *(hammingEncodedData + i));
     printf("\n\n");
 
-    ruinData();
-    hammingDecoding();
+    ruinEncodedData = ruinData(1, hammingEncodedData);
+    printf(KGRN_L"Result of hamming defective data: \n");
+    for(size_t i=0; i<DATASIZE+HAMMING_CHECKBITS; i++)
+        printf(RESET"%c", *(ruinEncodedData + i));
+    printf("\n\n");
+
+    hammingDecodedData = hammingDecoding(ruinEncodedData);
+    printf(KGRN_L"Result of hamming decoded data: \n");
+    for(size_t i=0; i<DATASIZE+HAMMING_CHECKBITS; i++)
+        printf(RESET"%c", *(hammingDecodedData + i));
+    printf("\n\n");
+    /*----------------------*/
+
+    /*---- Linear block code ----*/
+    
+    /*---------------------------*/
 
     return 0;
 }
