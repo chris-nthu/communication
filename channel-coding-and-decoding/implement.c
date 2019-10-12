@@ -104,8 +104,8 @@ char * ruinData(int amount, char hammingEncodedData[]) {
     }
 
     srand(time(NULL));
-    //int randIndex = rand()%(DATASIZE+HAMMING_CHECKBITS);
-    int randIndex = 20;
+    int randIndex = rand()%(DATASIZE+HAMMING_CHECKBITS);
+    //int randIndex = 20;
     //printf("%d\n", randIndex);  
     if(ruinEncodedData[randIndex] == '1')
         ruinEncodedData[randIndex] = '0';
@@ -161,6 +161,14 @@ int main(int argc, char *argv[]) {
     char *ruinEncodedData;
     char *hammingDecodedData;
 
+    FILE *fptr;
+
+    fptr = fopen("output.txt", "w");
+    if(fptr == NULL) {
+        printf("Error!");
+        exit(1);
+    }
+
     /* Used to randomly generate 1Kbits data */
     generateRandomData(originalBin);
 
@@ -189,11 +197,12 @@ int main(int argc, char *argv[]) {
     for(size_t i=0; i<DATASIZE+HAMMING_CHECKBITS; i++)
         printf(RESET"%c", *(hammingDecodedData + i));
     printf("\n\n");
+
+    fprintf(fptr, "%s", hammingDecodedData);
+    printf(KBLU_L"Output the result in output.txt......\n");
+    printf(RESET"\n\n");
     /*----------------------*/
 
-    /*---- Linear block code ----*/
-    
-    /*---------------------------*/
-
+    fclose(fptr);
     return 0;
 }
