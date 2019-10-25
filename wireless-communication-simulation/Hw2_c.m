@@ -1,10 +1,10 @@
 clear; clc;
 
-samples_number = 100000; intervals_number = 100;
+samples_number = 100000; intervals_number = floor((90000/3600)/0.15)*2;
 fc = 2 * 10^9;
 wavelength = 3 * 10^8 / fc;
 
-doppler_frequency_shift = []
+doppler_frequency_shift = [];
 
 for i=1:samples_number
     doppler_frequency_shift(end+1) = (((20000/3600)+(70000/3600)*rand())/wavelength)*cos(-pi+2*pi*rand());

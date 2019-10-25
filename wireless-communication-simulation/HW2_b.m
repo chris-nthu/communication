@@ -9,7 +9,7 @@ numbers_of_sample = 100000;
 
 incidence_angle = -pi + 2*pi * rand(numbers_of_sample, 1);
 
-x_axis = linspace(-fm, fm, 2*fm+1);
+x_axis = [-fm:1:fm];
 
 doppler_frequency_shift = fm * cos(incidence_angle);
 
@@ -27,9 +27,11 @@ while test < fm
     test = test + 1
 end
 
-S = sum(prob);
-
 figure(1);
 plot(x_axis, prob);
+title('Probability Density Function'); xlabel('x'); ylabel('f(x)');
+grid on;
 figure(2);
 [f,x] = ecdf(doppler_frequency_shift); plot(x,f);
+title('Cumulative Distribution Function'); xlabel('x'); ylabel('F(x)');
+grid on;

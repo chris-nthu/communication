@@ -1,22 +1,37 @@
-clear; clc;
+clc; clear;
 
-v = 90000 / 3600;
+v = 90000/3600;
+c = 3 * 10^8;
 fc = 26 * 10^9;
-wavelength = 3 * 10^8 / fc;
+wavelength = c / fc;
 fm = v / wavelength;
-samples_number = 1000000; intervals_number = 100;
+numbers_of_sample = 100000;
 
-incidence_angle = -pi + 2 * pi * rand(1, samples_number);
+incidence_angle = -pi + 2*pi * rand(numbers_of_sample, 1);
+
+x_axis = [-fm:1:fm];
+
 doppler_frequency_shift = fm * cos(incidence_angle);
 
-[y, x] = hist(doppler_frequency_shift, intervals_number);
+test = -fm; prob = [];
+
+while test < fm
+    count = 0;
+    for i = 1:numbers_of_sample
+        if (doppler_frequency_shift(i) > test) & (doppler_frequency_shift(i) < test + 1)
+            count = count + 1
+        end
+    end
+    prob(end+1) = count / numbers_of_sample;
+
+    test = test + 1
+end
+
 figure(1);
-plot(x, y./samples_number);
-xlabel('Doppler frequency shift (x)');
-ylabel('f(x)');
-title('Probability Density Function');
+plot(x_axis, prob);
+title('Probability Density Function'); xlabel('x'); ylabel('f(x)');
 grid on;
 figure(2);
-cdfplot(doppler_frequency_shift);
-xlabel('Doppler frequency shift (x)');
-title('Cumulative Distribution Function');
+[f,x] = ecdf(doppler_frequency_shift); plot(x,f);
+title('Cumulative Distribution Function'); xlabel('x'); ylabel('F(x)');
+grid on;
