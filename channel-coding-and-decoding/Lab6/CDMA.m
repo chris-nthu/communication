@@ -69,11 +69,5 @@ for n = 1:N
     end
     RECON = [RECON ; TOT / M];
 end
-'Reconstructed data at the receiver:'
-RECON
-
-
-% data bit stream for each sender
-D = [  1  1  1 -1  1 -1 -1 -1  1  1  1 -1  1 -1 -1 -1 ; 
-       1 -1  1  1  1 -1  1  1  1 -1  1  1  1 -1  1  1 ];
+'Reconstructed data at the receiver:', RECON
 
