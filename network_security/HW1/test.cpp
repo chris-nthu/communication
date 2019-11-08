@@ -24,46 +24,16 @@
 #endif
 
 #define RANDOM_NUM_SIZE 256
-#define BITS_PER_INT (sizeof(int)*8)
 
 using namespace std;
 
-// function to convert decimal to hexadecimal 
-void decToHexa(unsigned int n) 
-{    
-    // char array to store hexadecimal number 
-    char hexaDeciNum[RANDOM_NUM_SIZE/BITS_PER_INT]; 
-      
-    // counter for hexadecimal number array 
-    int i = 0; 
-    while(n!=0) {    
-        // temporary variable to store remainder 
-        int temp  = 0; 
-          
-        // storing remainder in temp variable. 
-        temp = n % 16; 
-          
-        // check if temp < 10
-        if(temp < 10) {
-            hexaDeciNum[i] = temp + 48; 
-            i++; 
-        } else { 
-            hexaDeciNum[i] = temp + 55; 
-            i++; 
-        }
-          
-        n = n/16;
-    } 
-
-    // printing hexadecimal number array in reverse order 
-    //for(int j=i-1; j>=0; j--)  cout << hexaDeciNum[j] ;
-    //cout << " " ; 
-} 
-
+// generate pseudorandom prime number
 void generateRandomPrimeNum(mpz_t randomNum) {
+    /*--- initialize randomNum ---*/
     mpz_init(randomNum);
     mpz_init_set_str(randomNum, "0", 10);
 
+    /*--- generate random seed ---*/
     unsigned long seed;
     seed = time(NULL);
 
@@ -71,29 +41,46 @@ void generateRandomPrimeNum(mpz_t randomNum) {
     gmp_randinit_default(rstate);
     gmp_randseed_ui(rstate, seed);
 
+    /*--- determine if the large number is a prime number ---*/
     int isPrime = 0;
     while(!isPrime){
+        // generate random 256-bit number
         mpz_urandomb(randomNum, rstate, RANDOM_NUM_SIZE);
+        
+        // use miller-rabin method to determine if the large number is a prime number
         isPrime = mpz_probab_prime_p(randomNum, 10);
-        // cout << isPrime << " ";
     }
-
-    // gmp_printf("randNum = %Zd\n", randomNum);
 }
 
-int main() {
+int main(void) {
+    /*--- argument ---*/
     mpz_t randomNum;        // pseudorandom prime number
     char *hex_randomNum;    // hexadecimal pesudorandom prime number
 
+
+    // generate pseudorandom prime number
     generateRandomPrimeNum(randomNum);
+
+    // convert decimal to hexacimal and print out
     hex_randomNum = mpz_get_str(hex_randomNum, 16, randomNum);
     
+
     cout << KRED_L << "<Miller-Rabin>" << endl;
     for(size_t i=0; i<8; i++) {
         for(size_t j=0; j<8; j++) {
-            cout << RESET << *(hex_randomNum +) //從這開始!!!!!!
+            cout << RESET << *(hex_randomNum + (i * 8 + j));
         }
+        cout << " " ;
     }
+    cout << endl << endl;;
+
+
+    cout << KRED_L << "<Rabin Encryption>" << endl;
+    cout << KGRN_L << "p = " ;
+    cout << endl;
+    cout << KGRN_L << "q = " ;
+    cout << RESET << endl;
+    // 從這開始
 
     return 0;
 }
