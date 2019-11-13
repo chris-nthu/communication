@@ -63,11 +63,19 @@ int main() {
     mpz_t x;
     mpz_init(x);
     mpz_set_str(x, ss.str().c_str(),10);
-    gmp_printf("%Zd\n", x);
+    //gmp_printf("%Zd\n", x);
     int rep = 0;
     rep = mpz_probab_prime_p(x, 10);
 
-    cout << rep << endl;
+    // cout << rep << endl;
+    string p, q;
+    cin >> p ;
+    stringstream pp(p);
+    mpz_t ppp;
+    mpz_init(ppp);
+    mpz_set_str(ppp, pp.str().c_str(), 10);
+    gmp_printf("%Zd\n", ppp);
+    cin >> q ;
 
     return 0;
 }

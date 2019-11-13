@@ -3,31 +3,11 @@
 #include <sstream>
 #include <string>
 
-#ifndef _DEBUG_COLOR_
-#define _DEBUG_COLOR_
-    #define KDRK "\x1B[0;30m"
-    #define KGRY "\x1B[1;30m"
-    #define KRED "\x1B[0;31m"
-    #define KRED_L "\x1B[1;31m"
-    #define KGRN "\x1B[0;32m"
-    #define KGRN_L "\x1B[1;32m"
-    #define KYEL "\x1B[0;33m"
-    #define KYEL_L "\x1B[1;33m"
-    #define KBLU "\x1B[0;34m"
-    #define KBLU_L "\x1B[1;34m"
-    #define KMAG "\x1B[0;35m"
-    #define KMAG_L "\x1B[1;35m"
-    #define KCYN "\x1B[0;36m"
-    #define KCYN_L "\x1B[1;36m"
-    #define WHITE "\x1B[0;37m"
-    #define WHITE_L "\x1B[1;37m"
-    #define RESET "\x1B[0m"
-#endif
-
 #define RANDOM_NUM_SIZE 256
 
 using namespace std;
 
+string hex_p, hex_q;
 
 // generate pseudorandom prime number
 void generateRandomPrimeNum(mpz_t randomNum) {
@@ -56,12 +36,19 @@ void generateRandomPrimeNum(mpz_t randomNum) {
 }
 
 
+// remove all spaces from a given string 
+string removeSpaces(string str)  { 
+    str.erase(remove(str.begin(), str.end(), ' '), str.end()); 
+    return str; 
+} 
+
+
 int main(void) {
 
     /*--- declare argument ---*/
     mpz_t randomNum;        // pseudorandom prime number
     char *hex_randomNum;    // hexadecimal pesudorandom prime number
-
+    
 
     /*--- generate pseudorandom prime number ---*/
     generateRandomPrimeNum(randomNum);
@@ -69,23 +56,24 @@ int main(void) {
     /*--- convert decimal to hexacimal and print out ---*/
     hex_randomNum = mpz_get_str(hex_randomNum, 16, randomNum);
 
-    cout << KRED_L << "<Miller-Rabin>" << endl;
+    cout << "<Miller-Rabin>" << endl;
     for(size_t i=0; i<8; i++) {
         for(size_t j=0; j<8; j++) {
-            cout << RESET << *(hex_randomNum + (i * 8 + j));
+            cout << *(hex_randomNum + (i * 8 + j));
         }
         cout << " " ;
     }
-    cout << endl << endl;;
+    cout << endl << endl;
 
-    string p_str, q_str ;
-    cout << KRED_L << "<Rabin Encryption>" << endl;
-    cout << KGRN_L << "p = " << RESET ;
-    cin >> p_str ;
-    cout << KGRN_L << "q = " << RESET ;
-    cin >> q_str ;
+    cout << "<Rabin Encryption>" << endl;
+    cout << "p = " ;
+    cin >> hex_p ;
+    cout << "q = " ;
+    cin >> hex_q ;
+    cout << "n = pq = " ;
     cout << endl;
+
+    hex_p.erase(remove(hex_p.begin(), hex_p.end(), ' '), hex_p.end());
 
     return 0;
 }
-
