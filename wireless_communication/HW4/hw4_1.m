@@ -1,20 +1,20 @@
 clear all; clc;
 
 Pb = zeros(4,9,4); % bit error rate
-n = 5*10^5; % the number of input bits
-ranNum = sign(randn(1,n)); % random generate -1 or 1
-SNR = 1:9;
+n = 10^6; % the number of input bits
+QPSKrandSignal = sign(randn(1,n)); % random QPSK random signal -1 and 1
+SNR = 1:9; % Es/No
 
 for L = 1:4 % L is diversity branches
-    r = zeros(L,n);
+    r = zeros(L,n); % the received complex envelopes of the diversity branches
     
     for i = 1:9 % i is SNR Es/No
-        rayleigh_fading = (1/sqrt(2))*(randn(L,n)+j*randn(L,n));
+        rayleigh_fading = (1/sqrt(2))*(randn(L,n)+j*randn(L,n)); % complex rayleigh fading gain
         noise = sqrt((1/(10^(i/10)))*0.5)*(randn(L,n)+j*randn(L,n));
         
         for k = 1:L
-        r(k,:) = ranNum.*(rayleigh_fading(k,:))+noise(k,:);
-        r_gain(k,:) = abs(r(k,:));
+            r(k,:) = QPSKrandSignal.*(rayleigh_fading(k,:))+noise(k,:);
+            r_gain(k,:) = abs(r(k,:));
         end
         
         %-----  SC  ------%
@@ -25,7 +25,7 @@ for L = 1:4 % L is diversity branches
             rd = sum((sparse(v,[1:n],1)).*r)./exp(j*angle(sum((sparse(v,[1:n],1)).*rayleigh_fading)));
         end
         rd = sign(real(rd));
-        Pb(1,i,L) = sum(rd~=ranNum)/n;
+        Pb(1,i,L) = sum(rd~=QPSKrandSignal)/n; % Compare with origin transmitted signal to calculate bit error rate
         %-----------------%
         
         %-----  MRC  -----%
@@ -35,7 +35,7 @@ for L = 1:4 % L is diversity branches
             rd = sum(r.*conj(rayleigh_fading));
         end   
         rd = sign(real(rd));
-        Pb(2,i,L) = sum(rd~=ranNum)/n;
+        Pb(2,i,L) = sum(rd~=QPSKrandSignal)/n;
         %-----------------%
         
         %-----  EGC  -----%
@@ -45,7 +45,7 @@ for L = 1:4 % L is diversity branches
             rd = sum(r./exp(j*angle(rayleigh_fading)));
         end   
         rd = sign(real(rd));
-        Pb(3,i,L) = sum(rd~=ranNum)/n;
+        Pb(3,i,L) = sum(rd~=QPSKrandSignal)/n;
         %-----------------%
         
         %-----  DC  ------%
@@ -55,7 +55,7 @@ for L = 1:4 % L is diversity branches
             rd = sum(r);
         end  
         rd = sign(real(rd));
-        Pb(4,i,L) = sum(rd~=ranNum)/n;
+        Pb(4,i,L) = sum(rd~=QPSKrandSignal)/n;
         %-----------------%
     end
 end
