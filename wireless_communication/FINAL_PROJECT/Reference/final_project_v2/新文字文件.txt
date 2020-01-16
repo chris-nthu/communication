@@ -1,0 +1,22 @@
+power=sqrt([0.189 0.379 0.239 0.095 0.061 0.037]);
+
+for tap=1:6
+    if tap>0 && tap<4
+        gain=sqrt(mean(class(tap,:).*conj(class(tap,:))));
+        class(tap,:)=(class(tap,:)/gain)*power(tap);
+        normail_power(tap)=mean(class(tap,:).*conj(class(tap,:)));
+    end
+    if tap==4
+        gain=sqrt(mean(gau1(1,:).*conj(gau1(1,:))));
+        gau1(1,:)=(gau1(1,:)/gain)*power(tap);
+        normail_power(tap)=mean(gau1(1,:).*conj(gau1(1,:)));
+    end
+    if tap>4 && tap<7
+        gain=sqrt(mean(gau2(tap-4,:).*conj(gau2(tap-4,:))));
+        gau2(tap-4,:)=(gau2(tap-4,:)/gain)*power(tap);
+        normail_power(tap)=mean(gau2(tap-4,:).*conj(gau2(tap-4,:)));
+    end
+end
+de=[0 0.2 0.5 1.6 2.3 5];
+i=1:6;
+stem(de(i),normail_power(i))
