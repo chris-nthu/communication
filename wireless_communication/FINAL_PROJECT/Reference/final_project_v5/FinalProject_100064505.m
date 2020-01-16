@@ -1,6 +1,5 @@
 % Final project (v4) 100064505
-clear all;
-clc
+clear; clc; close all;
 
 % input parameters %
 M=16; % M­Óoscilators
@@ -21,10 +20,10 @@ fmT=fm*T;
 
 tau=[0 2 5 16 23 50]; % unit:0.1us
 frac_power=[0.189 0.379 0.239 0.095 0.061 0.037]; % fractional power
-%stem(tau./10,frac_power);
-%xlabel('Time delay \tau (\mus)');
-%ylabel('Fraction of power');
-%title('Typical Urban (TU)');
+stem(tau./10,frac_power);
+xlabel('Time delay \tau (\mus)');
+ylabel('Fraction of power');
+title('Typical Urban (TU)');
 
 a1=[10 1];
 a2=[1 31.6];
@@ -82,70 +81,70 @@ for kk=1:L
 end
 
 r_complex=frac_power(1).*g(1,:)+frac_power(2).*g(2,:)+frac_power(3).*g(3,:)+frac_power(4).*g(4,:)+frac_power(5).*g(5,:)+frac_power(6).*g(6,:);
-%semilogy(t,abs(g(1,:)),'--',t,abs(g(4,:)),':',t,abs(g(5,:)),'.-');
-%xlabel('Time,t/T'); 
-%ylabel('Envelope level (dB)');
+semilogy(t,abs(g(1,:)),'--',t,abs(g(4,:)),':',t,abs(g(5,:)),'.-');
+xlabel('Time,t/T'); 
+ylabel('Envelope level (dB)');
 
 %*** Fading gain distribution ***%
 r=abs(r_complex);
-%figure(1);
-%hist(10*log10(r),500);
-%xlabel('Power (dB)'); 
-%ylabel('Number of pots');
-%title('Fading gain distribution');
+figure(1);
+hist(10*log10(r),500);
+xlabel('Power (dB)'); 
+ylabel('Number of pots');
+title('Fading gain distribution');
 
 %*** Time-domain strength profile ***%
-%figure(2);
-%semilogy(t,10*log10(r));
-%xlabel('Time,t/T'); 
-%ylabel('Envelope level (dB)');
-%title('Time-domain strength profile');
+figure(2);
+semilogy(t,10*log10(r));
+xlabel('Time,t/T'); 
+ylabel('Envelope level (dB)');
+title('Time-domain strength profile');
 
 %*** Time-domain Autocorration ***%
 total_tau=200;
 Rrr=autocorr(r_complex,total_tau);
 fm_tau=fm*total_tau;
 x1 = linspace(0,fm_tau,total_tau+1);
-%figure(3);
-%plot(x1,real(Rrr));
-%xlabel('Time delay f_m\tau (sec)');
-%ylabel('Autocorrelation');
-%title('Time-domain autocorrelation');
+figure(3);
+plot(x1,real(Rrr));
+xlabel('Time delay f_m\tau (sec)');
+ylabel('Autocorrelation');
+title('Time-domain autocorrelation');
 
 %*** Doppler Spectrum ***%
 NFFT = 2^12;
 Srr = fft(Rrr,NFFT);
 abs_Srr=abs(Srr);
 f = 1/(2*T)*linspace(0,1,NFFT/2);
-%figure(4);
-%plot(f./fm,abs(Srr(1:NFFT/2)));
+figure(4);
+plot(f./fm,abs(Srr(1:NFFT/2)));
 xlim([0 1]);
-%xlabel('Normalized Doppler frequency f/f_m ');
-%ylabel('S(f)');
-%title('Doppler Spectrum');
+xlabel('Normalized Doppler frequency f/f_m ');
+ylabel('S(f)');
+title('Doppler Spectrum');
 
 %*** Freq-domain strength profile ***%
 NFFT=2^15;
 r_freq=fft(r_complex,NFFT);
 abs_r_freq=abs(r_freq);
 f = 1/(2*T)*linspace(0,1,NFFT/2);
-%figure(5);
-%plot(f./fm,abs_r_freq(1:NFFT/2));
+figure(5);
+plot(f./fm,abs_r_freq(1:NFFT/2));
 xlim([0 1]);
-%xlabel('frequency,f/f_m'); 
-%ylabel('Envelope level (dB)');
-%title('Frequency-domain strength profile');
+xlabel('frequency,f/f_m'); 
+ylabel('Envelope level (dB)');
+title('Frequency-domain strength profile');
 
 %*** Freq-domain Autocorration ***%
 R_r_freq=autocorr(r_freq,total_tau);
-%figure(6);
-%tau_f=0:1/(length(R_r_freq)-1):1;
+figure(6);
+tau_f=0:1/(length(R_r_freq)-1):1;
 tau_f=0:length(R_r_freq)-1;
 tau_f=2*tau_f./T;
-%plot(tau_f,R_r_freq);
-%xlabel('Doppler frequency (Hz)');
-%ylabel('Autocorrelation');
-%title('Frequency-domain autocorrelation');
+plot(tau_f,R_r_freq);
+xlabel('Doppler frequency (Hz)');
+ylabel('Autocorrelation');
+title('Frequency-domain autocorrelation');
 
 %*** Crossing rate and Fade durarion ***%
 level_dB=-10:15; % dB
@@ -183,12 +182,12 @@ Rg1g2=crosscorr(g(1,:),g(2,:),total_tau);
 Rg1g4=crosscorr(g(1,:),g(4,:),total_tau);
 Rg1g5=crosscorr(g(1,:),g(5,:),total_tau);
 fm_tau=fm*total_tau;
-%figure(9);
+figure(9);
 x1 = linspace(0,fm_tau,(total_tau+1));
-%plot(x1,Rg1g2(1,total_tau+1:end),'g-',x1,Rg1g4(1,total_tau+1:end),'r--',x1,Rg1g5(1,total_tau+1:end),'b:');
-%xlabel('Time delay f_m\tau (sec)');
-%ylabel('Cross correlation');
-%title('Time-domain cross-correlation');
+plot(x1,Rg1g2(1,total_tau+1:end),'g-',x1,Rg1g4(1,total_tau+1:end),'r--',x1,Rg1g5(1,total_tau+1:end),'b:');
+xlabel('Time delay f_m\tau (sec)');
+ylabel('Cross correlation');
+title('Time-domain cross-correlation');
 
 %*** Coherence time and Doppler spread ***%
 temp=1;
