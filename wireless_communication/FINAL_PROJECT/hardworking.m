@@ -49,8 +49,26 @@ saveas(gcf,'Result\Fading Gain Distribution.jpg');
 figure;
 plot(1:1:1000, 20*log(g_magnitude(1:1000)), 'linewidth', 1); grid on;
 xlabel('Time (t/T)'); ylabel('Envelop Level (dB)');
-title('Time domain Stength Profile');
+title('Time domain Strength Profile');
 saveas(gcf,'Result\Time domain Stength Profile.jpg');
+
+figure;
+plot(1:1:1000, 20*log(abs(g1(1:1000))), 'linewidth', 1); grid on;
+xlabel('Time (t/T)'); ylabel('Envelop Level (dB)');
+title('Time domain Strength Profile of CLASS');
+saveas(gcf,'Result\Time domain Strength Profile of CLASS.jpg');
+
+figure;
+plot(1:1:1000, 20*log(abs(g4(1:1000))), 'linewidth', 1); grid on;
+xlabel('Time (t/T)'); ylabel('Envelop Level (dB)');
+title('Time domain Strength Profile of GAUS1');
+saveas(gcf,'Result\Time domain Strength Profile of GAUS1.jpg');
+
+figure;
+plot(1:1:1000, 20*log(abs(g5(1:1000))), 'linewidth', 1); grid on;
+xlabel('Time (t/T)'); ylabel('Envelop Level (dB)');
+title('Time domain Strength Profile of GAUS2');
+saveas(gcf,'Result\Time domain Strength Profile of GAUS2.jpg');
 
 %% Time Domain : Auto-Correlation
 [autocorrCLASS,lags] = xcorr(g1,'coeff');
@@ -122,18 +140,15 @@ xlabel('Frequency (f/f_m)'); ylabel('Envelop Level (dB)');
 title('Frequency-domain Strength Profile');
 saveas(gcf,'Result\Frequency-domain Strength Profile.jpg');
 
-%% Frequency Domain: Autocorrelation
-G = fft(g);
-GG = G.*conj(G); % convolution in time is equivalent to multiplication in frequency
-autoG = ifft(GG);
-autoG = autoG/max(autoG); % normalize
-
+%% Frequency Domain : Auto-Correlation
+total_tau = 200;
+autocorr_combine = autocorr(g_freqdomain, total_tau);
 figure;
-plot(time, real(autoG(1:length(time))), 'linewidth', 1);
-ylim([-1,1]); grid on;
-xlabel('Time Delay, f_m\tau');
-ylabel('Auto-Correlation');
-title('Frequency Domain Auto-Correlation of 6 taps combination');
+tau_f = 0:length(autocorr_combine)-1;
+tau_f=(-100) * tau_f./(t/NumSamples-100);
+plot(tau_f, autocorr_combine, 'linewidth', 1.5); grid on;
+xlabel('Frequency (Hz)'); ylabel('Auto-Correlation');
+title('Frequency Domain Auto-Correlation of 6 taps combination'); xlim([0 200]);
 saveas(gcf,'Result\Frequency Domain Auto-Correlation of 6 taps combination.jpg');
 
 %% Frequency Domain : Coherence Bandwidth
@@ -160,4 +175,3 @@ title('Cross-Correlation Between Different paths');
 legend('tap1 & tap4', 'tap4 & tap5', 'tap1 & tap5');
 ylim([-1 1]);
 saveas(gcf,'Result\Cross-Correlation Between Different paths.jpg');
-

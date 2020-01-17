@@ -1,5 +1,3 @@
-%final project 
-
 clear all;
 M=16;
 t_0=0;
