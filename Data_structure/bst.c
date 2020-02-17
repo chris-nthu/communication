@@ -30,6 +30,43 @@ typedef struct Address_book{
     struct Address_book *right_next;
 }Node;
 
+Node *Insert_node(Node *root, char name[20], char cellphone[10]){
+    Node *new = (Node*)malloc(sizeof(Node));
+    Node *parent;
+    Node *current;
+
+    for(int i=0; i<20; i++)
+        new->name[i] = name[i];
+    for(int i=0; i<10; i++)
+        new->cellphone[i] = cellphone[i];
+
+    new->left_next = NULL;
+    new->right_next = NULL;
+
+    if(root==NULL){
+        printf(KGRN_L"\n[Success] Insert OK!\n");
+        return new;
+    }
+
+    current = root;
+    while(current!=NULL){
+        parent = current;
+
+        if(strcmp(current->name, name)<0)
+            current = current->left_next;
+        else
+            current = current->right_next;
+    }
+
+    if(strcmp(parent->name, name)<0)
+        parent->left_next = new;
+    else
+        parent->right_next = new;
+    
+    printf(KGRN_L"\n[Success] Insert OK!\n");
+    return root;
+}
+
 Node *Load_file(void){
     FILE *fptr;
     char name[20];
@@ -52,39 +89,33 @@ Node *Load_file(void){
     return root;
 }
 
-Node *Insert_node(Node *root, char name[20], char cellphone[10]){
-    Node *new = (Node*)malloc(sizeof(Node));
-    Node *parent;
-    Node *current;
-
-    new->data = value;
-    new->left_next = NULL;
-    new->right_next = NULL;
-
-    if(root==NULL)
-        return new;
-
-    current = root;
-    while(current!=NULL){
-        parent = current;
-
-        if(current->data>value)
-            current = current->left_next;
+Node *Search_node(Node *ptr, char name[20]){
+    while(ptr!=NULL){
+        if(ptr->name==name)
+            return ptr;
+        else if(strcmp(ptr->name, name)>0)
+            ptr = ptr->left_next;
         else
-            current = current->right_next;
+            ptr = ptr->right_next;
     }
 
-    if(parent->data>value)
-        parent->left_next = new;
-    else
-        parent->right_next = new;
-    
-    return root;
+    return NULL;
+}
+
+void print_preorder(Node *ptr){
+    if(ptr != NULL){
+        printf(KGRN_L"[%s, %s]\n", ptr->name, ptr->cellphone);
+        print_preorder(ptr->left_next);
+        print_preorder(ptr->right_next);
+    }
 }
 
 int main(void){
     char option;
     Node *root;
+    char name[20];
+    char cellphone[10];
+    char buff[10];
 
     root = Load_file();
 
@@ -103,6 +134,33 @@ int main(void){
 
         printf(KYEL"\nEnter your choice: ");
         scanf("\n%c", &option);
+
+        switch(option){
+            case 'i':
+                printf(KCYN"\nEnter the name you want to add: ");
+                fgets(name, sizeof name, stdin); // Bug
+                fgets(name, sizeof name, stdin);
+                strtok(name, "\n");
+                printf("Enter the cellphone of the name: ");
+                fgets(cellphone, sizeof cellphone, stdin);
+                fgets(buff, sizeof buff, stdin);
+                root = Insert_node(root, name, cellphone);
+                break;
+            case 'l':
+                printf(KCYN"\nList all of data in this tree by preorder method.\n");
+                puts("");
+                print_preorder(root);
+                puts("");
+                break;
+            case 's':
+                printf(KCYN"\nEnter the name you wanna search: ");
+                fgets(name, sizeof name, stdin);
+                fgets(name, sizeof name, stdin);
+                root = Search_node(root, "Chris");
+                printf("%s\n", root->name);
+                break;
+
+        }
 
         
     }
