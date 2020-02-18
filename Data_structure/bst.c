@@ -25,7 +25,7 @@
 
 typedef struct Address_book{
     char name[20];
-    char cellphone[10];
+    char cellphone[11];
     struct Address_book *left_next;
     struct Address_book *right_next;
 }Node;
@@ -37,14 +37,14 @@ Node *Insert_node(Node *root, char name[20], char cellphone[10]){
 
     for(int i=0; i<20; i++)
         new->name[i] = name[i];
-    for(int i=0; i<10; i++)
+    for(int i=0; i<11; i++)
         new->cellphone[i] = cellphone[i];
 
     new->left_next = NULL;
     new->right_next = NULL;
 
     if(root==NULL){
-        printf(KGRN_L"\n[Success] Insert OK!\n");
+        printf(KGRN_L"\n[SUCCESS] Insert OK!\n");
         return new;
     }
 
@@ -52,53 +52,30 @@ Node *Insert_node(Node *root, char name[20], char cellphone[10]){
     while(current!=NULL){
         parent = current;
 
-        if(strcmp(current->name, name)<0)
+        if(strcmp(current->name, name)>0)
             current = current->left_next;
         else
             current = current->right_next;
     }
 
-    if(strcmp(parent->name, name)<0)
+    if(strcmp(parent->name, name)>0)
         parent->left_next = new;
     else
         parent->right_next = new;
     
-    printf(KGRN_L"\n[Success] Insert OK!\n");
-    return root;
-}
-
-Node *Load_file(void){
-    FILE *fptr;
-    char name[20];
-    char cellphone[10];
-    Node *root = NULL;
-
-    puts("File is loading...");
-    if((fptr=fopen("bst.dat", "r"))==NULL){
-        puts(KRED_L"[Error] bst.dat not found!");
-        return NULL;
-    }
-
-    while(fscanf(fptr, "%s %s", name, cellphone)!=EOF)
-        if(strcmp(name, "")!=0)
-            root = Insert_node(root, name, cellphone);
-    
-    puts(KGRN_L"[Success] Loading file OK!");
-    fclose(fptr);
-
+    printf(KGRN_L"\n[SUCCESS] Insert OK!\n");
     return root;
 }
 
 Node *Search_node(Node *ptr, char name[20]){
     while(ptr!=NULL){
-        if(ptr->name==name)
+        if(strcmp(ptr->name, name)==0)
             return ptr;
         else if(strcmp(ptr->name, name)>0)
             ptr = ptr->left_next;
         else
             ptr = ptr->right_next;
     }
-
     return NULL;
 }
 
@@ -110,14 +87,19 @@ void print_preorder(Node *ptr){
     }
 }
 
-int main(void){
-    char option;
-    Node *root;
-    char name[20];
-    char cellphone[10];
-    char buff[10];
+void Load_file(){
 
-    root = Load_file();
+}
+
+int main(void){
+    int option;
+    Node *root = NULL;
+    Node *current;
+    char name[20];
+    char cellphone[11];
+    FILE *fp;
+    
+    
 
     while(1){
         puts(KBLU_L"");
@@ -133,18 +115,35 @@ int main(void){
         puts("|----------------------------------------|");
 
         printf(KYEL"\nEnter your choice: ");
-        scanf("\n%c", &option);
+        option = getchar();
+        getchar();
 
-        switch(option){
+        switch((char)option){
             case 'i':
                 printf(KCYN"\nEnter the name you want to add: ");
-                fgets(name, sizeof name, stdin); // Bug
                 fgets(name, sizeof name, stdin);
                 strtok(name, "\n");
                 printf("Enter the cellphone of the name: ");
                 fgets(cellphone, sizeof cellphone, stdin);
-                fgets(buff, sizeof buff, stdin);
+                strtok(cellphone, "\n");
                 root = Insert_node(root, name, cellphone);
+                getchar();
+                break;
+            case 's':
+                printf(KCYN"\nEnter the name you wanna search: ");
+                fgets(name, sizeof name, stdin);
+                strtok(name, "\n");
+                current = Search_node(root, name);
+                if(current!=NULL){
+                    printf(KGRN_L"\n[Information]\n");
+                    printf("The address of the node: %p\n", current);
+                    printf("Name: %s\n", current->name);
+                    printf("Phone Number: %s\n", current->cellphone);
+                    printf("The address of left_next: %p\n", current->left_next);
+                    printf("The address of right_next: %p\n", current->right_next);
+                } else{
+                    printf(KRED_L"\n[ERROR] The node is not exists.\n");
+                }
                 break;
             case 'l':
                 printf(KCYN"\nList all of data in this tree by preorder method.\n");
@@ -152,14 +151,12 @@ int main(void){
                 print_preorder(root);
                 puts("");
                 break;
-            case 's':
-                printf(KCYN"\nEnter the name you wanna search: ");
-                fgets(name, sizeof name, stdin);
-                fgets(name, sizeof name, stdin);
-                root = Search_node(root, "Chris");
-                printf("%s\n", root->name);
+            case 'q':
+                printf(KGRN_L"\nQuit the address book.\n\n");
+                exit(0);
                 break;
-
+            default:
+                printf(KRED_L"\n[ERROR] You enter the wrong command. Please try again.\n");
         }
 
         
