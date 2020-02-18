@@ -23,6 +23,8 @@
     #define RESET "\x1B[0m"
 #endif
 
+#define FILENAME "record.dat"
+
 typedef struct Address_book{
     char name[20];
     char cellphone[11];
@@ -87,8 +89,48 @@ void print_preorder(Node *ptr){
     }
 }
 
-void Load_file(){
+Node *Load_file(){
+    FILE *fp;
+    char name[20];
+    char cellphone[11];
+    Node *root = NULL;
 
+    if((fp = fopen(FILENAME, "r"))==NULL){
+        printf(KRED_L"\n[ERROR] %s is not exists.\n", FILENAME);
+        return NULL;
+    }
+    else{
+        printf(KGRN_L"\n[SUCCESS] %s is exist. Loding data....\n", FILENAME);
+        while(fscanf(fp, "%s %s", name, cellphone)!=EOF)
+            root = Insert_node(root, name, cellphone);
+    }
+
+    fclose(fp);
+
+    return root;
+}
+
+void preorder(Node *root, FILE *fp){
+    if(root!=NULL){
+        fprintf(fp, "%s %s\n", root->name, root->cellphone);
+        preorder(root->left_next, fp);
+        preorder(root->right_next, fp);
+    }
+}
+
+void Save_tree(Node *root){
+    FILE *fp;
+    printf(KGRN_L"File saving...\n");
+
+    if((fp = fopen(FILENAME, "w+"))==NULL){
+        printf(KRED_L"\n[ERROR] Open %s failed.\n", FILENAME);
+        return;
+    }
+
+    preorder(root, fp);
+
+    printf(KGRN_L"\n[SUCCESS] Save OK!\n\n");
+    fclose(fp);
 }
 
 int main(void){
@@ -97,9 +139,8 @@ int main(void){
     Node *current;
     char name[20];
     char cellphone[11];
-    FILE *fp;
     
-    
+    root = Load_file();
 
     while(1){
         puts(KBLU_L"");
@@ -129,6 +170,8 @@ int main(void){
                 root = Insert_node(root, name, cellphone);
                 getchar();
                 break;
+            case 'd':
+                break;
             case 's':
                 printf(KCYN"\nEnter the name you wanna search: ");
                 fgets(name, sizeof name, stdin);
@@ -153,6 +196,7 @@ int main(void){
                 break;
             case 'q':
                 printf(KGRN_L"\nQuit the address book.\n\n");
+                Save_tree(root);
                 exit(0);
                 break;
             default:
