@@ -133,6 +133,11 @@ void Save_tree(Node *root){
     fclose(fp);
 }
 
+Node* Delete_node(Node *root, char name[20]){
+
+    return root;
+}
+
 int main(void){
     int option;
     Node *root = NULL;
@@ -171,6 +176,10 @@ int main(void){
                 getchar();
                 break;
             case 'd':
+                printf(KCYN"\nEnter the name you want to delete: ");
+                fgets(name, sizeof name, stdin);
+                strtok(name, "\n");
+                root = Delete_node(root, name);
                 break;
             case 's':
                 printf(KCYN"\nEnter the name you wanna search: ");
