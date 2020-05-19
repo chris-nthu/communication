@@ -58,14 +58,14 @@ def Bayesian_Train(O1, O2, X_train, Y_train):
 
     P = O1*O2
     beta = 1
+    phi = np.ndarray(shape=(400,P+2))
+    s = [] # s[0] means s1 ; s[1] means s2
+    mu = [[], []]
     m_0 = np.ones(P+2)
     S_0 = np.eye(P+2)
-    phi = np.ndarray(shape=(400,P+2))
-    s = []
-    mu = [[], []]
-    
-    s.append((max(X_train[:,0]-min(X_train[:,0])))/(O1-1))
-    s.append((max(X_train[:,1]-min(X_train[:,1])))/(O2-1))
+
+    s.append((max(X_train[:,0])-min(X_train[:,0]))/(O1-1))
+    s.append((max(X_train[:,1])-min(X_train[:,1]))/(O2-1))
 
     for i in range(1, O1+1):
         for j in range(1, O2+1):
@@ -85,8 +85,8 @@ def Bayesian_Train(O1, O2, X_train, Y_train):
     return s, mu, m_N
 
 
-#---------- Bayesian Linear Regression predict ----------
-def Bayesian_Predict(O1, O2, s, mu, m_N, X_test, Y_test):
+#---------- Bayesian Predict & Least Square ----------
+def Bayesian_Predict(O1, O2, s, mu, X_test, Y_test, m_N):
 
     P = O1*O2
     phi_test = np.ndarray(shape=(100,P+2))
@@ -107,13 +107,13 @@ def Bayesian_Predict(O1, O2, s, mu, m_N, X_test, Y_test):
     result = phi_test.dot(w_MAP)
     squared_error = (result-Y_test)**2
 
-    return result, squared_error
+    return w_MAP, result, squared_error
 
 
 def main():
 
-    O1 = 12
-    O2 = 14
+    O1 = 2
+    O2 = 2
 
     # Read training data set
     df = pd.read_csv('Training_set.csv', header=None)
@@ -133,13 +133,14 @@ def main():
     # Use trained linear model to predict the chance of admit and compute the squared error
     ML_result, ML_squared_error = ML_Predict(O1, O2, s, mu, phi, X_test, Y_test, Y_train)
 
-    # Use Bayesian Linear Regression Approach to train the model
     s, mu, m_N = Bayesian_Train(O1, O2, X_train, Y_train)
 
-    # Use trained Bayesian Linear model to predict the chance of admit and compute the squared error
-    Bayesian_result, Bayesian_squared_error = Bayesian_Predict(O1, O2, s, mu, m_N, X_test, Y_test)
+    Bayesian_w, Bayesian_result, Bayesian_squared_error = Bayesian_Predict(O1, O2, s, mu, X_test, Y_test, m_N)
 
+    print(ML_result)
     print(ML_squared_error)
+    print(Bayesian_w)
+    print(Bayesian_result)
     print(Bayesian_squared_error)
 
 
