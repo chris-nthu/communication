@@ -44,7 +44,7 @@ class Linear_Regression:
     
     def Bayesian_Train(self):
         m_0 = np.zeros(self.P+2)
-        S_0 = np.eye(self.P+2)
+        S_0 = (1/self.alpha)*np.eye(self.P+2)
         phi = self.feature_vector(self.X_train)
 
         S_N_inv = np.linalg.inv(S_0)+self.beta*(phi.T.dot(phi))
@@ -56,7 +56,7 @@ class Linear_Regression:
         result = self.feature_vector(self.X_test).dot(w_MAP)
         squared_error = (result-self.Y_test)**2
 
-        return result, squared_error
+        return w_MAP, result, squared_error
 
 
 def data_split(train_data, test_data):
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     ML_result, ML_squared_error = linear_regression.ML_Predict(phi)
 
     m_N = linear_regression.Bayesian_Train()
-    Bayesian_result, Bayesian_squared_error = linear_regression.Bayesian_Predict(m_N)
-
-    print(ML_result)
-    print(Bayesian_result)
+    w_MAP, Bayesian_result, Bayesian_squared_error = linear_regression.Bayesian_Predict(m_N)
+    
+    print(ML_squared_error)
+    print(Bayesian_squared_error)
